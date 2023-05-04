@@ -9,4 +9,4 @@ if (!projectName) {
 
 const app = new App();
 
-new CdkStack(app, projectName);
+const stack = new CdkStack(app, projectName);

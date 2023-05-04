@@ -1,36 +1,54 @@
-import {
-  App,
-  Stack,
-  StackProps,
-  Duration,
-  aws_lambda_nodejs as lambda_nodejs,
-  aws_lambda as lambda,
-} from 'aws-cdk-lib';
+import { Fn, App, Stack, StackProps } from 'aws-cdk-lib';
 import { join } from 'path';
+import { createNodejsFunction } from './resources/nodejs-function';
+import { createCloudFront } from './resources/cloudfront';
+import { createRoute53 } from './resources/route-53';
+
+const DOMAIN_VALUES = {
+  domain: 'jackbliss.co.uk',
+  certificateArn:
+    'arn:aws:acm:us-east-1:244824501490:certificate/4ae7e253-1c65-4f76-b016-2d806ed948ee',
+  hostedZoneId: 'Z09902761MK1RSNDXH3T0',
+} as const satisfies Record<string, string>;
 
 export class CdkStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const lambdaFunction = new lambda_nodejs.NodejsFunction(
-      this,
-      `${id}Lambda`,
-      {
-        functionName: `${id}_lambda`,
-        handler: 'handler',
-        entry: join(__dirname, '../src/lambda.ts'),
-        memorySize: 1024,
-        runtime: lambda.Runtime.NODEJS_18_X,
-        timeout: Duration.seconds(300),
-        bundling: {
-          minify: false,
-          externalModules: ['aws-sdk'],
-        },
-      },
-    );
+    // generate the target base URL for this app
+    const appSubdomainName = String(process.env.PROJECT_NAME).toLowerCase();
+    const appDomainName = `${appSubdomainName}.${DOMAIN_VALUES.domain}`;
 
-    lambdaFunction.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
+    // generate actual lambda function that implements server
+    const { functionUrl } = createNodejsFunction({
+      context: this,
+      id,
+      entry: join(__dirname, '../src/lambda.ts'),
+    });
+
+    // get domainName required by cloudfront
+    const apiUrl = Fn.select(1, Fn.split('://', functionUrl.url));
+    const domainName = Fn.select(0, Fn.split('/', apiUrl));
+
+    // create cloudfront distribution
+    const { cloudFrontWebDistribution } = createCloudFront({
+      context: this,
+      id,
+      domainName,
+      certificateArn: DOMAIN_VALUES.certificateArn,
+    });
+
+    console.info('function url:', functionUrl.url);
+    console.info('cf url:', cloudFrontWebDistribution.distributionDomainName);
+
+    // create a-record for distro
+    createRoute53({
+      context: this,
+      id,
+      hostedZoneId: DOMAIN_VALUES.hostedZoneId,
+      zoneName: DOMAIN_VALUES.domain,
+      recordName: appDomainName,
+      cloudFrontWebDistribution,
     });
   }
 }

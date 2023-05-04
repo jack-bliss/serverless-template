@@ -8,6 +8,7 @@
 ## Deploy
 
 * Double check you've updated `PROJECT_NAME` in [environment.sh](environment.sh)
+* Update `DOMAIN_VALUES` in [infra/cdk-stack.ts](infra/cdk-stack.ts) as necessary
 * Use `npm run infra-deploy` to deploy the app to a lambda function
 * Must have AWS CLI configured with correct credentials etc
 * Uses [infra/cdk-stack.ts](infra/cdk-stack.ts) to generate stuff in AWS to power the app
