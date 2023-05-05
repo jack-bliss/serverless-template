@@ -13,3 +13,4 @@
 * Must have AWS CLI configured with correct credentials etc
 * Uses [infra/cdk-stack.ts](infra/cdk-stack.ts) to generate stuff in AWS to power the app
 * [infra/launch-cdk.ts](infra/launch-cdk.ts) is what actually invokes CDK to create all the infra defined in code
+* URL will be generated using `PROJECT_NAME` and `DOMAIN` defined in [infra/app.ts](infra/app.ts)
