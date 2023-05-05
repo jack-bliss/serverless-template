@@ -27,6 +27,9 @@ export const createNodejsFunction = ({
       bundling: {
         minify: true,
         externalModules: ['aws-sdk'],
+        loader: {
+          '.html': 'text',
+        },
       },
     },
   );

@@ -2,7 +2,7 @@
   "arrowParens": "always",
   "bracketSpacing": true,
   "endOfLine": "lf",
-  "htmlWhitespaceSensitivity": "css",
+  "htmlWhitespaceSensitivity": "strict",
   "insertPragma": false,
   "singleAttributePerLine": true,
   "bracketSameLine": false,
