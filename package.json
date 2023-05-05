@@ -5,11 +5,11 @@
   "scripts": {
     "test": "jest",
     "cdk": "cdk",
-    "start": "source environment.sh && nodemon",
+    "start": "nodemon",
     "build:lambda": "esbuild ./src/lambda.ts --bundle --minify --outdir=dist --platform=node",
-    "infra:deploy": "source environment.sh && cdk deploy --force --require-approval never",
-    "infra:destroy": "source environment.sh && cdk destroy",
-    "infra:diff": "source environment.sh && cdk diff"
+    "infra:deploy": "cdk deploy --force --require-approval never",
+    "infra:destroy": "cdk destroy",
+    "infra:diff": "cdk diff"
   },
   "author": "",
   "license": "ISC",

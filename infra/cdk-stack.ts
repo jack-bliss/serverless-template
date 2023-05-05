@@ -4,23 +4,15 @@ import { createNodejsFunction } from './resources/nodejs-function';
 import { createCloudFront } from './resources/cloudfront';
 import { createRoute53 } from './resources/route-53';
 import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
-
-const DOMAIN_VALUES = {
-  domain: 'jackbliss.co.uk',
-  certificateArn:
-    'arn:aws:acm:us-east-1:244824501490:certificate/4ae7e253-1c65-4f76-b016-2d806ed948ee',
-  hostedZoneId: 'Z09902761MK1RSNDXH3T0',
-} as const satisfies Record<string, string>;
+import { CERTIFICATE_ARN, DOMAIN, HOSTED_ZONE_ID, PROJECT_NAME } from './app';
 
 export class CdkStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
     // generate the target base URL for this app
-    const appSubdomainName = projectNameToSubdomain(
-      String(process.env.PROJECT_NAME),
-    );
-    const appDomainName = `${appSubdomainName}.${DOMAIN_VALUES.domain}`;
+    const appSubdomainName = projectNameToSubdomain(PROJECT_NAME);
+    const appDomainName = `${appSubdomainName}.${DOMAIN}`;
 
     // generate actual lambda function that implements server
     const { functionUrl } = createNodejsFunction({
@@ -38,7 +30,7 @@ export class CdkStack extends Stack {
       context: this,
       id,
       domainName,
-      certificateArn: DOMAIN_VALUES.certificateArn,
+      certificateArn: CERTIFICATE_ARN,
       aliases: [appDomainName],
     });
 
@@ -46,8 +38,8 @@ export class CdkStack extends Stack {
     createRoute53({
       context: this,
       id,
-      hostedZoneId: DOMAIN_VALUES.hostedZoneId,
-      zoneName: DOMAIN_VALUES.domain,
+      hostedZoneId: HOSTED_ZONE_ID,
+      zoneName: DOMAIN,
       recordName: appDomainName,
       cloudFrontWebDistribution,
     });
