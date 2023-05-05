@@ -4,9 +4,14 @@ import { CdkStack } from './cdk-stack';
 
 const projectName = process.env.PROJECT_NAME;
 if (!projectName) {
-  throw new Error(`Cannot process without PROJECT_NAME env variable!`);
+  throw new Error(`Cannot deploy stack without PROJECT_NAME env variable!`);
 }
 
 const app = new App();
 
-const stack = new CdkStack(app, projectName);
+const stack = new CdkStack(app, projectName, {
+  description: '',
+  env: {
+    region: 'eu-west-2',
+  },
+});

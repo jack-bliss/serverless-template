@@ -3,6 +3,7 @@ import { join } from 'path';
 import { createNodejsFunction } from './resources/nodejs-function';
 import { createCloudFront } from './resources/cloudfront';
 import { createRoute53 } from './resources/route-53';
+import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
 
 const DOMAIN_VALUES = {
   domain: 'jackbliss.co.uk',
@@ -16,7 +17,9 @@ export class CdkStack extends Stack {
     super(scope, id, props);
 
     // generate the target base URL for this app
-    const appSubdomainName = String(process.env.PROJECT_NAME).toLowerCase();
+    const appSubdomainName = projectNameToSubdomain(
+      String(process.env.PROJECT_NAME),
+    );
     const appDomainName = `${appSubdomainName}.${DOMAIN_VALUES.domain}`;
 
     // generate actual lambda function that implements server
@@ -36,10 +39,8 @@ export class CdkStack extends Stack {
       id,
       domainName,
       certificateArn: DOMAIN_VALUES.certificateArn,
+      aliases: [appDomainName],
     });
-
-    console.info('function url:', functionUrl.url);
-    console.info('cf url:', cloudFrontWebDistribution.distributionDomainName);
 
     // create a-record for distro
     createRoute53({

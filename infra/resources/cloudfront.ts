@@ -1,4 +1,8 @@
-import { Duration, aws_cloudfront as cloudfront } from 'aws-cdk-lib';
+import {
+  Duration,
+  aws_cloudfront as cloudfront,
+  aws_certificatemanager as certificatemanager,
+} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export const createCloudFront = ({
@@ -6,27 +10,29 @@ export const createCloudFront = ({
   id,
   domainName,
   certificateArn,
+  aliases,
 }: {
   context: Construct;
   id: string;
   domainName: string;
   certificateArn: string;
+  aliases: string[];
 }) => {
   const cloudFrontWebDistribution = new cloudfront.CloudFrontWebDistribution(
     context,
     `${id}_CloudFront`,
     {
       comment: `${id}HttpService cache behaviour`,
-      // viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
-      //   certificatemanager.Certificate.fromCertificateArn(
-      //     this,
-      //     `${id}_certificate`,
-      //     DOMAIN_VALUES.certificateArn,
-      //   ),
-      //   {
-      //     aliases: [appDomainName],
-      //   },
-      // ),
+      viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
+        certificatemanager.Certificate.fromCertificateArn(
+          context,
+          `${id}_certificate`,
+          certificateArn,
+        ),
+        {
+          aliases,
+        },
+      ),
       originConfigs: [
         {
           customOriginSource: {
