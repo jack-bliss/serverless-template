@@ -8,7 +8,7 @@ notFound.get('*', (req, res) => {
   const page = renderTemplate(template, {
     title: 'Hello, world!',
     body: 'File not found!',
-    styles: '<link href="styles.css" rel="stylesheet" />',
+    styles: '<link href="bundles/styles.css" rel="stylesheet" />',
   });
   res.send(page);
 });

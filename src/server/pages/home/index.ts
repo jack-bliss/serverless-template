@@ -9,8 +9,8 @@ home.get('/', (req, res) => {
   const page = renderTemplate(template, {
     title: 'Hello, world!',
     body: body(),
-    scripts: '<script src="page.js"></script>',
-    styles: '<link href="styles.css" rel="stylesheet" />',
+    scripts: '<script src="bundles/page.js"></script>',
+    styles: '<link href="bundles/styles.css" rel="stylesheet" />',
   });
   res.send(page);
 });

@@ -8,6 +8,6 @@ esbuild.build({
   ],
   bundle: true,
   minify: false,
-  outdir: 'bucket',
+  outdir: 'bucket/bundles',
   platform: 'browser',
 });
