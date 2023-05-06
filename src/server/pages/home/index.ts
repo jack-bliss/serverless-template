@@ -7,7 +7,7 @@ export const home = Router();
 
 home.get('/', (req, res) => {
   const page = renderTemplate(template, {
-    title: 'Hello, world!',
+    title: `jackbliss.co.uk`,
     body: body(),
     scripts: '<script src="bundles/page.js"></script>',
     styles: '<link href="bundles/styles.css" rel="stylesheet" />',

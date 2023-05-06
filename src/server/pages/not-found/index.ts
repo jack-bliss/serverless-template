@@ -6,7 +6,7 @@ export const notFound = Router();
 
 notFound.get('*', (req, res) => {
   const page = renderTemplate(template, {
-    title: 'Hello, world!',
+    title: '404',
     body: 'File not found!',
     styles: '<link href="bundles/styles.css" rel="stylesheet" />',
   });
