@@ -6,11 +6,9 @@ import { body } from './body';
 export const home = Router();
 
 home.get('/', (req, res) => {
-  const bodyResult = body();
-  console.log({ bodyResult });
   const page = renderTemplate(template, {
     title: 'Hello, world!',
-    body: bodyResult,
+    body: body(),
     scripts: '<script src="page.js"></script>',
     styles: '<link href="styles.css" rel="stylesheet" />',
   });
