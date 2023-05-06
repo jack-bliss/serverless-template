@@ -1,36 +1,59 @@
-import { Fn, App, Stack, StackProps } from 'aws-cdk-lib';
+import { Fn, App, Stack, StackProps, aws_iam as iam } from 'aws-cdk-lib';
 import { join } from 'path';
 import { createNodejsFunction } from './resources/nodejs-function';
 import { createCloudFront } from './resources/cloudfront';
 import { createRoute53 } from './resources/route-53';
 import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
-import { CERTIFICATE_ARN, DOMAIN, HOSTED_ZONE_ID, PROJECT_NAME } from './app';
+import { createS3 } from './resources/s3';
+import { Source } from 'aws-cdk-lib/aws-s3-deployment';
+import * as esbuild from 'esbuild';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+type RoutingProps = {
+  certificateArn: string;
+  domain: string;
+  hostedZoneId: string;
+};
 
 export class CdkStack extends Stack {
-  constructor(scope: App, id: string, props?: StackProps) {
+  constructor(
+    scope: App,
+    id: string,
+    routingProps: RoutingProps,
+    props?: StackProps,
+  ) {
     super(scope, id, props);
 
     // generate the target base URL for this app
-    const appSubdomainName = projectNameToSubdomain(PROJECT_NAME);
-    const appDomainName = `${appSubdomainName}.${DOMAIN}`;
+    const appSubdomainName = projectNameToSubdomain(id);
+    const appDomainName = `${appSubdomainName}.${routingProps.domain}`;
 
-    // generate actual lambda function that implements server
-    const { functionUrl } = createNodejsFunction({
+    const { bucket } = createS3({
       context: this,
       id,
-      entry: join(__dirname, '../src/lambda.ts'),
+      appDomainName,
+      sources: [Source.asset('./bucket')],
+    });
+
+    // generate actual lambda function that implements server
+    const { nodejsFunction, functionUrl } = createNodejsFunction({
+      context: this,
+      id,
+      entry: join(__dirname, '../src/server/lambda.ts'),
+      bucket,
     });
 
     // get domainName required by cloudfront
-    const apiUrl = Fn.select(1, Fn.split('://', functionUrl.url));
-    const domainName = Fn.select(0, Fn.split('/', apiUrl));
+    const functionApiUrl = Fn.select(1, Fn.split('://', functionUrl.url));
+    const functionDomainName = Fn.select(0, Fn.split('/', functionApiUrl));
 
     // create cloudfront distribution
     const { cloudFrontWebDistribution } = createCloudFront({
       context: this,
       id,
-      domainName,
-      certificateArn: CERTIFICATE_ARN,
+      domainName: functionDomainName,
+      certificateArn: routingProps.certificateArn,
       aliases: [appDomainName],
     });
 
@@ -38,8 +61,8 @@ export class CdkStack extends Stack {
     createRoute53({
       context: this,
       id,
-      hostedZoneId: HOSTED_ZONE_ID,
-      zoneName: DOMAIN,
+      hostedZoneId: routingProps.hostedZoneId,
+      zoneName: routingProps.domain,
       recordName: appDomainName,
       cloudFrontWebDistribution,
     });

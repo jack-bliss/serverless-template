@@ -18,11 +18,10 @@ export const createCloudFront = ({
   certificateArn: string;
   aliases: string[];
 }) => {
-  const cloudFrontWebDistribution = new cloudfront.CloudFrontWebDistribution(
-    context,
-    `${id}_CloudFront`,
-    {
+  const cloudFrontWebDistribution =
+    new cloudfront.CloudFrontWebDistribution(context, `${id}_CloudFront`, {
       comment: `${id}HttpService cache behaviour`,
+      defaultRootObject: '',
       viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(
           context,
@@ -37,7 +36,8 @@ export const createCloudFront = ({
         {
           customOriginSource: {
             domainName,
-            originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+            originProtocolPolicy:
+              cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
           },
           behaviors: [
             {
@@ -68,7 +68,6 @@ export const createCloudFront = ({
           ],
         },
       ],
-    },
-  );
+    });
   return { cloudFrontWebDistribution };
 };

@@ -3,6 +3,8 @@
     "swc": true
   },
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "target": "ES2020",
     "module": "commonjs",
     "lib": [

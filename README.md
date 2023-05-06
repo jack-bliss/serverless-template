@@ -2,8 +2,9 @@
 
 ## Local dev
 
+* `npm i`
 * Update [infra/app.ts](infra/app.ts) with relevant PROJECT_NAME, PORT, etc
-* Use `npm run start` to get [src/server.ts](src/server.ts) to start listening
+* Use `npm start` to get [src/server.ts](src/server.ts) to start listening
 
 ## Deploy
 

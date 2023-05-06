@@ -5,8 +5,8 @@
   "ignore": [
     "src/**/*.test.ts"
   ],
-  "ext": "ts,tsx,json,html",
-  "exec": "npm run build:start && node ./dist/start.js",
+  "ext": "ts,tsx,css,json,html",
+  "exec": "npm run build:client && npm run build:server && node ./dist/server.js",
   "events": {
     "start": ""
   }

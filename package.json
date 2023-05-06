@@ -6,9 +6,10 @@
     "test": "jest",
     "cdk": "cdk",
     "start": "nodemon",
-    "build:lambda": "esbuild ./src/lambda.ts --loader:.html=text --bundle --minify --outdir=dist --platform=node",
-    "build:start": "esbuild ./src/start.ts --loader:.html=text --bundle --minify --outdir=dist --platform=node",
-    "infra:deploy": "cdk deploy --force --require-approval never",
+    "build:lambda": "ts-node ./infra/build.ts --target lambda",
+    "build:server": "ts-node ./infra/build.ts --target server",
+    "build:client": "ts-node ./infra/bundle.ts",
+    "infra:deploy": "npm run build:client && cdk deploy --force --require-approval never",
     "infra:destroy": "cdk destroy",
     "infra:diff": "cdk diff"
   },
@@ -22,18 +23,23 @@
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.1",
     "@types/node": "^18.16.3",
+    "@vendia/serverless-express": "^4.10.1",
+    "aws-cdk": "^2.78.0",
+    "aws-cdk-lib": "^2.78.0",
     "babel-jest": "^29.5.0",
+    "commander": "^10.0.1",
     "esbuild": "^0.17.18",
+    "express": "^4.18.2",
+    "htm": "^3.1.1",
     "jest": "^29.5.0",
     "nodemon": "^2.0.22",
+    "preact": "^10.13.2",
+    "preact-render-to-string": "^6.0.3",
     "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@vendia/serverless-express": "^4.10.1",
-    "aws-cdk": "^2.78.0",
-    "aws-cdk-lib": "^2.78.0",
-    "express": "^4.18.2"
+    "@aws-sdk/client-s3": "^3.328.0"
   }
 }
