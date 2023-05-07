@@ -6,7 +6,7 @@ const client = new S3Client({
   region: 'eu-west-2',
 });
 
-export async function readFromBucket(path: string) {
+export async function getFromBucket(path: string) {
   const params = {
     Bucket: process.env.BUCKET,
     Key: path.startsWith('/') ? path.replace('/', '') : path,

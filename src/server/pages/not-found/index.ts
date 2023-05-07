@@ -10,5 +10,5 @@ notFound.get('*', (req, res) => {
     body: 'File not found!',
     styles: '<link href="bundles/styles.css" rel="stylesheet" />',
   });
-  res.send(page);
+  res.type('text/html').send(page);
 });

@@ -6,7 +6,7 @@ import {
 import { ISource } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
-export function createS3({
+export function createBucket({
   context,
   id,
   appDomainName,

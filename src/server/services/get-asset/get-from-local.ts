@@ -2,7 +2,7 @@ import { join } from 'path';
 import { readFile } from 'fs/promises';
 import { NotFoundError } from './not-found-error';
 
-export async function readFromLocal(path: string) {
+export async function getFromLocal(path: string) {
   try {
     const totalPath = join(__dirname, '../bucket', path);
     return await readFile(totalPath);

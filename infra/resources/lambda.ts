@@ -51,7 +51,7 @@ export const createNodejsFunction = ({
   // give it access to the bucket
   nodejsFunction.addToRolePolicy(
     new iam.PolicyStatement({
-      actions: ['s3:GetObject'],
+      actions: ['s3:GetObject', 's3:PutObject'],
       resources: [`${bucket.bucketArn}/*`],
     }),
   );

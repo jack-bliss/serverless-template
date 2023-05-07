@@ -5,7 +5,7 @@ import {
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-export const createCloudFront = ({
+export const createDistribution = ({
   context,
   id,
   domainName,

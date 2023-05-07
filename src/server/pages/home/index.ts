@@ -12,5 +12,5 @@ home.get('/', (req, res) => {
     scripts: '<script src="bundles/page.js"></script>',
     styles: '<link href="bundles/styles.css" rel="stylesheet" />',
   });
-  res.send(page);
+  res.type('text/html').send(page);
 });

@@ -5,7 +5,7 @@ import {
 import { IDistribution } from 'aws-cdk-lib/aws-cloudfront';
 import { Construct } from 'constructs';
 
-export const createRoute53 = ({
+export const createARecord = ({
   context,
   id,
   hostedZoneId,

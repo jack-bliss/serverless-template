@@ -1,14 +1,11 @@
 import { Fn, App, Stack, StackProps, aws_iam as iam } from 'aws-cdk-lib';
-import { join } from 'path';
-import { createNodejsFunction } from './resources/nodejs-function';
-import { createCloudFront } from './resources/cloudfront';
-import { createRoute53 } from './resources/route-53';
-import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
-import { createS3 } from './resources/s3';
 import { Source } from 'aws-cdk-lib/aws-s3-deployment';
-import * as esbuild from 'esbuild';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { join } from 'path';
+import { createNodejsFunction } from './resources/lambda';
+import { createDistribution } from './resources/cloudfront';
+import { createARecord } from './resources/route-53';
+import { createBucket } from './resources/s3';
+import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
 
 type RoutingProps = {
   certificateArn: string;
@@ -29,15 +26,16 @@ export class CdkStack extends Stack {
     const appSubdomainName = projectNameToSubdomain(id);
     const appDomainName = `${appSubdomainName}.${routingProps.domain}`;
 
-    const { bucket } = createS3({
+    // create storage bucket that can be read from and written to
+    const { bucket } = createBucket({
       context: this,
       id,
       appDomainName,
       sources: [Source.asset('./bucket')],
     });
 
-    // generate actual lambda function that implements server
-    const { nodejsFunction, functionUrl } = createNodejsFunction({
+    // create actual lambda function that implements server (HttpService)
+    const { functionUrl } = createNodejsFunction({
       context: this,
       id,
       entry: join(__dirname, '../src/server/lambda.ts'),
@@ -49,7 +47,7 @@ export class CdkStack extends Stack {
     const functionDomainName = Fn.select(0, Fn.split('/', functionApiUrl));
 
     // create cloudfront distribution
-    const { cloudFrontWebDistribution } = createCloudFront({
+    const { cloudFrontWebDistribution } = createDistribution({
       context: this,
       id,
       domainName: functionDomainName,
@@ -57,8 +55,8 @@ export class CdkStack extends Stack {
       aliases: [appDomainName],
     });
 
-    // create a-record for distro
-    createRoute53({
+    // create a-record cloudfront distribution
+    createARecord({
       context: this,
       id,
       hostedZoneId: routingProps.hostedZoneId,
