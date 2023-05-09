@@ -10,7 +10,6 @@ export async function getFromLocal(path: string) {
     if (!(error instanceof Error)) {
       throw error;
     }
-    console.error(error);
     if (error instanceof Error && error.message.startsWith('ENOENT')) {
       throw new NotFoundError(path);
     }

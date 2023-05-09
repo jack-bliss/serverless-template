@@ -10,7 +10,7 @@ const { slug } = program.opts() as {
   slug: string;
 };
 
-console.log({ slug });
+console.info({ slug });
 
 async function main() {
   const { html } = await renderContentfulBlogPost(slug);

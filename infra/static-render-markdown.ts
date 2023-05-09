@@ -15,7 +15,7 @@ const { file } = program.opts() as {
   file: string;
 };
 
-console.log({ file });
+console.info({ file });
 
 async function main() {
   const markdown = await getFromLocal(file);
