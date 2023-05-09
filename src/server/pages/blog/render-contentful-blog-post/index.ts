@@ -1,15 +1,27 @@
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
-import { renderTemplate } from '../../../services';
+import { getAsset, renderTemplate } from '../../../services';
 import { BlogPost } from '../../../services/contentful/types';
 import { format, parseISO } from 'date-fns';
+import { getContentfulEntriesByField } from '../../../services/contentful';
 
-export function renderContentfulBlogPost(
-  template: string,
-  entry: BlogPost,
-) {
-  return renderTemplate(template, {
-    title: entry.title,
-    published: format(parseISO(entry.published), 'dd/MM/yyyy'),
-    body: documentToHtmlString(entry.body),
-  });
+export async function renderContentfulBlogPost(slug: string) {
+  const [template, entry] = await Promise.all([
+    getAsset('blog-post-template.html'),
+    getContentfulEntriesByField<BlogPost>({
+      contentType: 'blogPost',
+      field: 'slug',
+      value: slug,
+    }),
+  ]);
+  return {
+    html: renderTemplate(template.toString(), {
+      title: entry.items[0].fields.title,
+      published: format(
+        parseISO(entry.items[0].fields.published),
+        'dd/MM/yyyy',
+      ),
+      body: documentToHtmlString(entry.items[0].fields.body),
+    }),
+    raw: entry.items[0].fields,
+  };
 }

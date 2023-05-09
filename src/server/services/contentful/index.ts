@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Entry } from './types';
 
 const spaceId = '1fhzf2g69w98';
 const environment = 'master';
@@ -12,12 +13,10 @@ const contentfulApi = axios.create({
 
 export async function getContentfulEntry<T = unknown>(entryId: string) {
   const { data } = await contentfulApi.get(`/entries/${entryId}`);
-  return data as {
-    fields: T;
-  };
+  return data as Entry<T>;
 }
 
-export async function getContentfulEntryByField<T = unknown>({
+export async function getContentfulEntriesByField<T = unknown>({
   contentType,
   field,
   value,
@@ -32,7 +31,7 @@ export async function getContentfulEntryByField<T = unknown>({
       [`fields.${field}`]: value,
     },
   });
-  return data.items[0] as {
-    fields: T;
+  return data as {
+    items: Entry<T>[];
   };
 }

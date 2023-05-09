@@ -10,6 +10,7 @@
     "build:server": "ts-node ./infra/build.ts --target server",
     "build:client": "ts-node ./infra/bundle.ts",
     "build:markdown": "ts-node ./infra/static-render-markdown.ts",
+    "build:contentful-blog-post": "ts-node ./infra/static-render-contentful-blog-post.ts",
     "infra:deploy": "npm run build:client && cdk deploy --force --require-approval never",
     "infra:destroy": "cdk destroy",
     "infra:diff": "cdk diff"
