@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { getAsset } from '../services';
 import { NotFoundError } from '../services/get-asset/not-found-error';
+import { renderMarkdown } from './render-markdown';
 
 const fileTypeAndContentType = [
   { file: 'css', content: 'text/css' },
@@ -38,6 +39,12 @@ export async function serveAssets(
   try {
     const asset = await getAsset(path);
     const contentType = getContentType(path);
+    if (contentType === 'text/markdown' && req.query.raw !== 'true') {
+      res
+        .type('text/html')
+        .send(await renderMarkdown(path, asset.toString('utf-8')));
+      return;
+    }
     res.type(contentType).send(asset);
   } catch (error: unknown) {
     if (error instanceof NotFoundError) {

@@ -4,7 +4,8 @@ import { join } from 'path';
 esbuild.build({
   entryPoints: [
     join(__dirname, `../src/client/page.tsx`),
-    join(__dirname, `../src/client/styles.css`),
+    join(__dirname, `../src/client/splash.css`),
+    join(__dirname, `../src/client/markdown.css`),
   ],
   bundle: true,
   minify: false,
