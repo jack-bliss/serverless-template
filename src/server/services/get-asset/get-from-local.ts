@@ -4,12 +4,13 @@ import { NotFoundError } from './not-found-error';
 
 export async function getFromLocal(path: string) {
   try {
-    const totalPath = join(__dirname, '../bucket', path);
+    const totalPath = join('./bucket', path);
     return await readFile(totalPath);
   } catch (error: unknown) {
     if (!(error instanceof Error)) {
       throw error;
     }
+    console.error(error);
     if (error instanceof Error && error.message.startsWith('ENOENT')) {
       throw new NotFoundError(path);
     }
