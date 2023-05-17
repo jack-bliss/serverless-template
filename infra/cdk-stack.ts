@@ -1,4 +1,4 @@
-import { Fn, App, Stack, StackProps, aws_iam as iam } from 'aws-cdk-lib';
+import { Fn, App, Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
 import { Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { join } from 'path';
 import { createNodejsFunction } from './resources/lambda';
@@ -40,6 +40,10 @@ export class CdkStack extends Stack {
       id,
       entry: join(__dirname, '../src/server/lambda.ts'),
       bucket,
+      environment: {
+        NODE_ENV: 'production',
+        BUCKET: bucket.bucketName,
+      },
     });
 
     // get domainName required by cloudfront
@@ -63,6 +67,12 @@ export class CdkStack extends Stack {
       zoneName: routingProps.domain,
       recordName: appDomainName,
       cloudFrontWebDistribution,
+    });
+
+    new CfnOutput(this, `${id}_Assets`, { value: bucket.bucketName });
+    new CfnOutput(this, `${id}_Url`, { value: functionUrl.url });
+    new CfnOutput(this, `${id}_DistributionID`, {
+      value: cloudFrontWebDistribution.distributionId,
     });
   }
 }

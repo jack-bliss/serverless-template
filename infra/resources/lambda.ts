@@ -12,11 +12,13 @@ export const createNodejsFunction = ({
   id,
   entry,
   bucket,
+  environment,
 }: {
   context: Construct;
   id: string;
   entry: string;
   bucket: s3.Bucket;
+  environment: Record<string, string>;
 }) => {
   const nodejsFunction = new lambda_nodejs.NodejsFunction(
     context,
@@ -36,10 +38,7 @@ export const createNodejsFunction = ({
           '.html': 'text',
         },
       },
-      environment: {
-        NODE_ENV: 'production',
-        BUCKET: bucket.bucketName,
-      },
+      environment,
     },
   );
 

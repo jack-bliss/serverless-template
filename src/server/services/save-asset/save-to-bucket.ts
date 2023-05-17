@@ -1,5 +1,4 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Readable } from 'stream';
 
 const client = new S3Client({
   region: 'eu-west-2',
