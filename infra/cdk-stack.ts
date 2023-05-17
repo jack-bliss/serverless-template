@@ -70,7 +70,7 @@ export class CdkStack extends Stack {
     });
 
     new CfnOutput(this, `${id}_Assets`, { value: bucket.bucketName });
-    new CfnOutput(this, `${id}_Url`, { value: functionUrl.url });
+    new CfnOutput(this, `${id}_Url`, { value: appDomainName });
     new CfnOutput(this, `${id}_DistributionID`, {
       value: cloudFrontWebDistribution.distributionId,
     });
