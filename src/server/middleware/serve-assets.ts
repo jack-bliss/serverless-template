@@ -16,6 +16,7 @@ const fileTypeAndContentType = [
   { file: 'gif', content: 'image/gif' },
   { file: 'svg', content: 'image/svg+xml' },
   { file: 'ico', content: 'image/x-icon' },
+  { file: 'wav', content: 'audio/wav' },
 ] as const;
 
 const defaultContentType = 'text/plain';
