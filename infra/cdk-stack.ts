@@ -35,7 +35,7 @@ export class CdkStack extends Stack {
     });
 
     // create actual lambda function that implements server (HttpService)
-    const { functionUrl } = createNodejsFunction({
+    const { nodejsFunction, functionUrl } = createNodejsFunction({
       context: this,
       id,
       entry: join(__dirname, '../src/server/lambda.ts'),
@@ -70,9 +70,14 @@ export class CdkStack extends Stack {
     });
 
     new CfnOutput(this, `${id}_Assets`, { value: bucket.bucketName });
-    new CfnOutput(this, `${id}_Url`, { value: appDomainName });
+    new CfnOutput(this, `${id}_Url`, {
+      value: `https://${appDomainName}`,
+    });
     new CfnOutput(this, `${id}_DistributionID`, {
       value: cloudFrontWebDistribution.distributionId,
+    });
+    new CfnOutput(this, `${id}_LogGroupUrl`, {
+      value: `https://eu-west-2.console.aws.amazon.com/cloudwatch/home?region=eu-west-2#logsV2:log-groups/log-group/$252Faws$252Flambda$252F${nodejsFunction.functionName}`,
     });
   }
 }
