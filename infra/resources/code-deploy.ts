@@ -40,7 +40,7 @@ export const createCodeDeployServerApp = ({
       loadBalancer: codedeploy.LoadBalancer.application(
         loadBalancerTargetGroup,
       ),
-      deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
+      deploymentConfig: codedeploy.ServerDeploymentConfig.HALF_AT_A_TIME,
     },
   );
   return {
