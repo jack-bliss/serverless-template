@@ -8,7 +8,6 @@ source ~/.bashrc
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-
 node -v
 
 npm i pm2 -g
