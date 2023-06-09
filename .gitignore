@@ -4,3 +4,4 @@ cdk.out
 .vscode
 dist
 bucket/bundles
+ec2-fleet-launch-bucket

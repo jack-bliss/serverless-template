@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+hooks:
+  ApplicationStop:
+    - location: ./stop-server.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: ./start-server.sh
+      timeout: 300
+      runas: root

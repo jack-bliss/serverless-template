@@ -6,34 +6,55 @@ import {
 import { ISource } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
-export function createBucket({
-  context,
-  id,
-  appDomainName,
-  sources,
-}: {
-  context: Construct;
+type CreateBucketProps = {
+  scope: Construct;
   id: string;
-  appDomainName: string;
-  sources: ISource[];
-}) {
-  const bucket = new s3.Bucket(context, `${id}_S3`, {
-    bucketName: `${appDomainName}.assets`,
+  bucketName: string;
+  versioned?: boolean;
+  sources?: ISource[];
+};
+
+export function createBucket(
+  props: Omit<CreateBucketProps, 'sources'> & {
+    sources: ISource[];
+  },
+): {
+  bucket: s3.Bucket;
+  deployment: s3_deployment.BucketDeployment;
+};
+
+export function createBucket(props: Omit<CreateBucketProps, 'sources'>): {
+  bucket: s3.Bucket;
+};
+
+export function createBucket({
+  scope,
+  id,
+  bucketName,
+  sources,
+  versioned = false,
+}: CreateBucketProps) {
+  const bucket = new s3.Bucket(scope, `${id}_Bucket`, {
+    bucketName,
     blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     enforceSSL: true,
     removalPolicy: RemovalPolicy.DESTROY,
     autoDeleteObjects: true,
+    versioned: Boolean(versioned),
   });
 
-  const deployment = new s3_deployment.BucketDeployment(
-    context,
-    `${id}_BucketDeployment`,
-    {
-      destinationBucket: bucket,
-      sources,
-      prune: false,
-    },
-  );
+  const deployment =
+    typeof sources === 'undefined'
+      ? undefined
+      : new s3_deployment.BucketDeployment(
+          scope,
+          `${id}_BucketDeployment`,
+          {
+            destinationBucket: bucket,
+            sources,
+            prune: false,
+          },
+        );
 
   return {
     bucket,

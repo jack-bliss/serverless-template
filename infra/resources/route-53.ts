@@ -6,32 +6,34 @@ import { IDistribution } from 'aws-cdk-lib/aws-cloudfront';
 import { Construct } from 'constructs';
 
 export const createARecord = ({
-  context,
+  scope,
   id,
   hostedZoneId,
   zoneName,
   recordName,
-  cloudFrontWebDistribution,
+  distribution,
 }: {
-  context: Construct;
+  scope: Construct;
   id: string;
   hostedZoneId: string;
   zoneName: string;
   recordName: string;
-  cloudFrontWebDistribution: IDistribution;
+  distribution: IDistribution;
 }) => {
-  new route53.ARecord(context, `${id}_CDN_ARecord`, {
-    zone: route53.HostedZone.fromHostedZoneAttributes(
-      context,
-      `${id}_R53_HostedZone`,
-      {
-        hostedZoneId,
-        zoneName,
-      },
-    ),
-    recordName,
-    target: route53.RecordTarget.fromAlias(
-      new route53Targets.CloudFrontTarget(cloudFrontWebDistribution),
-    ),
-  });
+  return {
+    aRecord: new route53.ARecord(scope, `${id}_ARecord`, {
+      zone: route53.HostedZone.fromHostedZoneAttributes(
+        scope,
+        `${id}_HostedZoneReference`,
+        {
+          hostedZoneId,
+          zoneName,
+        },
+      ),
+      recordName,
+      target: route53.RecordTarget.fromAlias(
+        new route53Targets.CloudFrontTarget(distribution),
+      ),
+    }),
+  };
 };

@@ -2,11 +2,13 @@
 import { App } from 'aws-cdk-lib';
 import { CdkStack } from './cdk-stack';
 import {
-  CERTIFICATE_ARN,
+  US_EAST_CERTIFICATE_ARN,
+  EU_WEST_CERTIFICATE_ARN,
   DOMAIN,
   HOSTED_ZONE_ID,
   PROJECT_NAME,
 } from './app';
+import { BaseRegion } from './base-region';
 
 const app = new App();
 
@@ -15,13 +17,14 @@ new CdkStack(
   PROJECT_NAME,
   {
     hostedZoneId: HOSTED_ZONE_ID,
-    certificateArn: CERTIFICATE_ARN,
+    usCertificateArn: US_EAST_CERTIFICATE_ARN,
+    euCertificateArn: EU_WEST_CERTIFICATE_ARN,
     domain: DOMAIN,
   },
   {
     description: '',
     env: {
-      region: 'eu-west-2',
+      region: BaseRegion,
     },
   },
 );

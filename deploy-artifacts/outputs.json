@@ -1,0 +1,12 @@
+{
+  "Template": {
+    "LambdaDistributionID": "E1C59O83X3TIK4",
+    "AssetsBucketName": "lambda-template.jackbliss.co.uk.assets",
+    "AutoScalingGroupName": "Template_TestFleet",
+    "TestFleetLaunchBucketName": "server-template.jackbliss.co.uk.testfleet.launch",
+    "ServerDistributionID": "ENWI28XEW0QWK",
+    "ServerPublicUrl": "https://server-template.jackbliss.co.uk",
+    "LambdaPublicUrl": "https://lambda-template.jackbliss.co.uk",
+    "LambdaLogGroupUrl": "https://eu-west-2.console.aws.amazon.com/cloudwatch/home?region=eu-west-2#logsV2:log-groups/log-group/$252Faws$252Flambda$252FTemplate_HttpService"
+  }
+}

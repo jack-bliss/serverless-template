@@ -8,23 +8,25 @@ import {
 import { Construct } from 'constructs';
 
 export const createNodejsFunction = ({
-  context,
+  scope,
   id,
+  stackName,
   entry,
   bucket,
   environment,
 }: {
-  context: Construct;
+  scope: Construct;
   id: string;
+  stackName: string;
   entry: string;
-  bucket: s3.Bucket;
+  bucket?: s3.Bucket;
   environment: Record<string, string>;
 }) => {
   const nodejsFunction = new lambda_nodejs.NodejsFunction(
-    context,
+    scope,
     `${id}_Lambda`,
     {
-      functionName: `${id}HttpService`,
+      functionName: `${stackName}_${id}`,
       handler: 'handler',
       entry,
       memorySize: 1024,
@@ -47,19 +49,22 @@ export const createNodejsFunction = ({
     authType: aws_lambda.FunctionUrlAuthType.NONE,
   });
 
-  // give it access to the bucket
-  nodejsFunction.addToRolePolicy(
-    new iam.PolicyStatement({
-      actions: ['s3:GetObject', 's3:PutObject'],
-      resources: [`${bucket.bucketArn}/*`],
-    }),
-  );
-  nodejsFunction.addToRolePolicy(
-    new iam.PolicyStatement({
-      actions: ['s3:ListBucket'],
-      resources: [bucket.bucketArn],
-    }),
-  );
+  // if optional bucket is provided
+  if (bucket) {
+    // give it access to the bucket
+    nodejsFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:GetObject', 's3:PutObject'],
+        resources: [`${bucket.bucketArn}/*`],
+      }),
+    );
+    nodejsFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:ListBucket'],
+        resources: [bucket.bucketArn],
+      }),
+    );
+  }
 
   return {
     nodejsFunction,

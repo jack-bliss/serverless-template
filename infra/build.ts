@@ -1,6 +1,7 @@
 import { program } from 'commander';
 import * as esbuild from 'esbuild';
 import { join } from 'path';
+import { readFile } from 'fs/promises';
 
 const validEntries = ['server', 'lambda'] as const;
 type ValidEntry = (typeof validEntries)[number];
@@ -8,8 +9,8 @@ const isValidEntry = (test: string): test is ValidEntry =>
   (validEntries as readonly string[]).includes(test);
 
 program.requiredOption(
-  '--target <server or lambda>',
-  'Either server or lambda',
+  `--target <${validEntries.join(', ')}>`,
+  `Either ${validEntries.join(', ')}`,
 );
 
 program.parse();
@@ -19,7 +20,7 @@ const { target } = program.opts() as {
 };
 
 if (!isValidEntry(target)) {
-  throw new Error(`Target must be either lambda or server`);
+  throw new Error(`Target must be one of ${validEntries.join(', ')}`);
 }
 
 esbuild.build({

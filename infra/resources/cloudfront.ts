@@ -6,26 +6,62 @@ import {
 import { Construct } from 'constructs';
 
 export const createDistribution = ({
-  context,
+  scope,
   id,
-  domainName,
+  origin,
   certificateArn,
   aliases,
+  stackName,
 }: {
-  context: Construct;
+  scope: Construct;
   id: string;
-  domainName: string;
   certificateArn: string;
   aliases: string[];
+  origin: cloudfront.IOrigin;
+  stackName: string;
 }) => {
-  const cloudFrontWebDistribution =
-    new cloudfront.CloudFrontWebDistribution(context, `${id}_CloudFront`, {
-      comment: `${id}HttpService cache behaviour`,
+  const distribution = new cloudfront.Distribution(
+    scope,
+    `${id}_Cloudfront`,
+    {
+      comment: `${stackName} ${id} cache behaviour`,
+      defaultBehavior: {
+        origin,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+        cachePolicy: new cloudfront.CachePolicy(
+          scope,
+          `${id}_CachePolicy`,
+          {
+            defaultTtl: Duration.seconds(10),
+            minTtl: Duration.seconds(0),
+            maxTtl: Duration.hours(1),
+          },
+        ),
+      },
+      domainNames: aliases,
+      certificate: certificatemanager.Certificate.fromCertificateArn(
+        scope,
+        `${id}_CloudFront_CertificateReference`,
+        certificateArn,
+      ),
+    },
+  );
+  return { distribution };
+};
+
+/*
+  const distributionOld = new cloudfront.CloudFrontWebDistribution(
+    scope,
+    `${id}_CloudFront`,
+    {
+      comment: `${id} uses certificate with arn ${certificateArn}, has aliases [${aliases.join(
+        ', ',
+      )}]`,
       defaultRootObject: '',
       viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(
-          context,
-          `${id}_certificate`,
+          scope,
+          `${id}_CloudFront_CertificateReference`,
           certificateArn,
         ),
         {
@@ -68,6 +104,6 @@ export const createDistribution = ({
           ],
         },
       ],
-    });
-  return { cloudFrontWebDistribution };
-};
+    },
+  );
+*/

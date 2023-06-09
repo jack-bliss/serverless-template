@@ -1,9 +1,10 @@
 import { GetObjectCommand, NoSuchKey, S3Client } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { NotFoundError } from './not-found-error';
+import { BaseRegion } from '../../../../infra/base-region';
 
 const client = new S3Client({
-  region: 'eu-west-2',
+  region: BaseRegion,
 });
 
 export async function getFromBucket(path: string) {

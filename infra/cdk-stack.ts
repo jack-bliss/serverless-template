@@ -1,4 +1,12 @@
-import { Fn, App, Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
+import {
+  Fn,
+  App,
+  Stack,
+  StackProps,
+  CfnOutput,
+  aws_s3,
+  aws_s3_deployment,
+} from 'aws-cdk-lib';
 import { Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { join } from 'path';
 import { createNodejsFunction } from './resources/lambda';
@@ -6,9 +14,14 @@ import { createDistribution } from './resources/cloudfront';
 import { createARecord } from './resources/route-53';
 import { createBucket } from './resources/s3';
 import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
+import { BaseRegion } from './base-region';
+import { createEc2Fleet } from './resources/ec2-fleet';
+import { httpLambdaService } from './coordinated/http-lambda-service';
+import { httpEc2Service } from './coordinated/http-ec2-service';
 
 type RoutingProps = {
-  certificateArn: string;
+  usCertificateArn: string;
+  euCertificateArn: string;
   domain: string;
   hostedZoneId: string;
 };
@@ -16,68 +29,66 @@ type RoutingProps = {
 export class CdkStack extends Stack {
   constructor(
     scope: App,
-    id: string,
+    stackName: string,
     routingProps: RoutingProps,
     props?: StackProps,
   ) {
-    super(scope, id, props);
+    super(scope, stackName, props);
 
     // generate the target base URL for this app
-    const appSubdomainName = projectNameToSubdomain(id);
+    const appSubdomainName = projectNameToSubdomain(stackName);
     const appDomainName = `${appSubdomainName}.${routingProps.domain}`;
 
-    // create storage bucket that can be read from and written to
-    const { bucket } = createBucket({
-      context: this,
-      id,
-      appDomainName,
-      sources: [Source.asset('./bucket')],
-    });
-
-    // create actual lambda function that implements server (HttpService)
-    const { nodejsFunction, functionUrl } = createNodejsFunction({
-      context: this,
-      id,
-      entry: join(__dirname, '../src/server/lambda.ts'),
+    const {
       bucket,
-      environment: {
-        NODE_ENV: 'production',
-        BUCKET: bucket.bucketName,
-      },
-    });
-
-    // get domainName required by cloudfront
-    const functionApiUrl = Fn.select(1, Fn.split('://', functionUrl.url));
-    const functionDomainName = Fn.select(0, Fn.split('/', functionApiUrl));
-
-    // create cloudfront distribution
-    const { cloudFrontWebDistribution } = createDistribution({
-      context: this,
-      id,
-      domainName: functionDomainName,
-      certificateArn: routingProps.certificateArn,
-      aliases: [appDomainName],
-    });
-
-    // create a-record cloudfront distribution
-    createARecord({
-      context: this,
-      id,
+      distribution: lambdaDistribution,
+      nodejsFunction,
+    } = httpLambdaService({
+      scope: this,
+      stackName,
+      id: 'HttpService',
+      appDomainName: `lambda-${appDomainName}`,
       hostedZoneId: routingProps.hostedZoneId,
-      zoneName: routingProps.domain,
-      recordName: appDomainName,
-      cloudFrontWebDistribution,
+      certificateArn: routingProps.usCertificateArn,
+      domain: routingProps.domain,
     });
 
-    new CfnOutput(this, `${id}_Assets`, { value: bucket.bucketName });
-    new CfnOutput(this, `${id}_Url`, {
-      value: `https://${appDomainName}`,
+    const {
+      autoScalingGroup,
+      distribution: serverDistribution,
+      launchBucketName,
+    } = httpEc2Service({
+      scope: this,
+      id: 'TestFleet',
+      appDomainName: `server-${appDomainName}`,
+      hostedZoneId: routingProps.hostedZoneId,
+      usCertificateArn: routingProps.usCertificateArn,
+      stackName,
+      domain: routingProps.domain,
+      assetBucket: bucket,
     });
-    new CfnOutput(this, `${id}_DistributionID`, {
-      value: cloudFrontWebDistribution.distributionId,
+
+    new CfnOutput(this, `AssetsBucketName`, { value: bucket.bucketName });
+    new CfnOutput(this, `LambdaPublicUrl`, {
+      value: `https://lambda-${appDomainName}`,
     });
-    new CfnOutput(this, `${id}_LogGroupUrl`, {
-      value: `https://eu-west-2.console.aws.amazon.com/cloudwatch/home?region=eu-west-2#logsV2:log-groups/log-group/$252Faws$252Flambda$252F${nodejsFunction.functionName}`,
+    new CfnOutput(this, `ServerPublicUrl`, {
+      value: `https://server-${appDomainName}`,
+    });
+    new CfnOutput(this, `LambdaDistributionID`, {
+      value: lambdaDistribution.distributionId,
+    });
+    new CfnOutput(this, `ServerDistributionID`, {
+      value: serverDistribution.distributionId,
+    });
+    new CfnOutput(this, `LambdaLogGroupUrl`, {
+      value: `https://eu-west-2.console.aws.amazon.com/cloudwatch/home?region=${BaseRegion}#logsV2:log-groups/log-group/$252Faws$252Flambda$252F${nodejsFunction.functionName}`,
+    });
+    new CfnOutput(this, `AutoScalingGroupName`, {
+      value: autoScalingGroup.autoScalingGroupName,
+    });
+    new CfnOutput(this, `TestFleetLaunchBucketName`, {
+      value: launchBucketName,
     });
   }
 }

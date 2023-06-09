@@ -26,5 +26,10 @@ export async function handleError(
       error,
     });
   }
-  return res.send(String(timestamp));
+  return res.send({
+    timestamp,
+    path: req.path,
+    message: error.message,
+    error,
+  });
 }
