@@ -1,17 +1,13 @@
-import { NextFunction, Request, Response } from 'express';
 import axios from 'axios';
+import { Request, Response } from 'express';
 
-export async function handleError(
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export function handleError(error: Error, req: Request, res: Response) {
   const timestamp = Date.now();
+  const path = req.path;
   if (axios.isAxiosError(error)) {
     console.error({
       timestamp,
-      path: req.path,
+      path,
       message: error.message,
       responseStatus: error.response?.status,
       responseData: JSON.stringify(error.response?.data, null, 2),
@@ -21,14 +17,14 @@ export async function handleError(
   } else {
     console.error({
       timestamp,
-      path: req.path,
+      path,
       message: error.message,
       error,
     });
   }
   return res.send({
     timestamp,
-    path: req.path,
+    path,
     message: error.message,
     error,
   });

@@ -1,7 +1,7 @@
 import {
   aws_autoscaling as autoscaling,
-  aws_elasticloadbalancingv2 as elb,
   aws_codedeploy as codedeploy,
+  aws_elasticloadbalancingv2 as elb,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 

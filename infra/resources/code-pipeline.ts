@@ -1,6 +1,6 @@
 import {
-  aws_codedeploy,
   aws_codepipeline_actions as actions,
+  aws_codedeploy,
   aws_s3,
   aws_codepipeline as codepipeline,
 } from 'aws-cdk-lib';

@@ -1,8 +1,8 @@
 import { renderMarkdown } from '../src/server/middleware/render-markdown';
 
 import { program } from 'commander';
-import { getFromLocal } from '../src/server/services/get-asset/get-from-local';
 import { writeFile } from 'fs/promises';
+import { getFromLocal } from '../src/server/services/get-asset/get-from-local';
 
 program.requiredOption(
   '--file <path>',
@@ -11,9 +11,7 @@ program.requiredOption(
 
 program.parse();
 
-const { file } = program.opts() as {
-  file: string;
-};
+const { file } = program.opts<{ file: string }>();
 
 console.info({ file });
 

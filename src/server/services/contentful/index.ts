@@ -12,8 +12,10 @@ const contentfulApi = axios.create({
 });
 
 export async function getContentfulEntry<T = unknown>(entryId: string) {
-  const { data } = await contentfulApi.get(`/entries/${entryId}`);
-  return data as Entry<T>;
+  const { data } = await contentfulApi.get<Entry<T>>(
+    `/entries/${entryId}`,
+  );
+  return data;
 }
 
 export async function getContentfulEntriesByField<T = unknown>({
@@ -25,13 +27,13 @@ export async function getContentfulEntriesByField<T = unknown>({
   field: string;
   value: string;
 }) {
-  const { data } = await contentfulApi.get(`/entries`, {
+  const { data } = await contentfulApi.get<{
+    items: Entry<T>[];
+  }>(`/entries`, {
     params: {
       content_type: contentType,
       [`fields.${field}`]: value,
     },
   });
-  return data as {
-    items: Entry<T>[];
-  };
+  return data;
 }

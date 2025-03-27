@@ -1,8 +1,8 @@
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
-import { getAsset, renderTemplate } from '../../../services';
-import { BlogPost } from '../../../services/contentful/types';
 import { format, parseISO } from 'date-fns';
+import { getAsset, renderTemplate } from '../../../services';
 import { getContentfulEntriesByField } from '../../../services/contentful';
+import { BlogPost } from '../../../services/contentful/types';
 
 export async function renderContentfulBlogPost(slug: string) {
   const [template, entry] = await Promise.all([
@@ -13,15 +13,16 @@ export async function renderContentfulBlogPost(slug: string) {
       value: slug,
     }),
   ]);
+  const item = entry.items[0];
+  if (!item) {
+    throw new Error(`Couldn't get blog item with slug ${slug}`);
+  }
   return {
     html: renderTemplate(template.toString(), {
-      title: entry.items[0].fields.title,
-      published: format(
-        parseISO(entry.items[0].fields.published),
-        'dd/MM/yyyy',
-      ),
-      body: documentToHtmlString(entry.items[0].fields.body),
+      title: item.fields.title,
+      published: format(parseISO(item.fields.published), 'dd/MM/yyyy'),
+      body: documentToHtmlString(item.fields.body),
     }),
-    raw: entry.items[0].fields,
+    raw: item.fields,
   };
 }

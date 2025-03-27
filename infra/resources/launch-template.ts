@@ -1,6 +1,5 @@
 import { aws_ec2 as ec2, aws_iam as iam } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { PORT } from '../app';
 
 export const createLaunchTemplate = ({
   scope,

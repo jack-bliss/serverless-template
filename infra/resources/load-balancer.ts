@@ -2,7 +2,7 @@ import {
   Duration,
   aws_elasticloadbalancingv2 as elbv2,
 } from 'aws-cdk-lib';
-import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 type CreateLoadBalancerProps = {

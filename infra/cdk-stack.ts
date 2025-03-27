@@ -1,23 +1,8 @@
-import {
-  Fn,
-  App,
-  Stack,
-  StackProps,
-  CfnOutput,
-  aws_s3,
-  aws_s3_deployment,
-} from 'aws-cdk-lib';
-import { Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { join } from 'path';
-import { createNodejsFunction } from './resources/lambda';
-import { createDistribution } from './resources/cloudfront';
-import { createARecord } from './resources/route-53';
-import { createBucket } from './resources/s3';
-import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
+import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { BaseRegion } from './base-region';
-import { createEc2Fleet } from './resources/ec2-fleet';
-import { httpLambdaService } from './coordinated/http-lambda-service';
 import { httpEc2Service } from './coordinated/http-ec2-service';
+import { httpLambdaService } from './coordinated/http-lambda-service';
+import { projectNameToSubdomain } from './helpers/project-name-to-subdomain';
 
 type RoutingProps = {
   usCertificateArn: string;

@@ -1,7 +1,7 @@
 import { GetObjectCommand, NoSuchKey, S3Client } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
-import { NotFoundError } from './not-found-error';
 import { BaseRegion } from '../../../../infra/base-region';
+import { NotFoundError } from './not-found-error';
 
 const client = new S3Client({
   region: BaseRegion,
@@ -21,7 +21,7 @@ export async function getFromBucket(path: string) {
     }
     return await new Promise<Buffer>((resolve, reject) => {
       const chunks: Uint8Array[] = [];
-      Body.on('data', (chunk) => chunks.push(chunk));
+      Body.on('data', (chunk) => chunks.push(chunk as Uint8Array));
       Body.on('error', reject);
       Body.on('end', () => resolve(Buffer.concat(chunks)));
     });

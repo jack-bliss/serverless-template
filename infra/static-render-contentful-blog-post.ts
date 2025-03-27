@@ -6,9 +6,7 @@ program.requiredOption('--slug <slug>', 'Blog post slug');
 
 program.parse();
 
-const { slug } = program.opts() as {
-  slug: string;
-};
+const { slug } = program.opts<{ slug: string }>();
 
 console.info({ slug });
 

@@ -1,7 +1,7 @@
 import * as esbuild from 'esbuild';
 import { join } from 'path';
 
-esbuild.build({
+void esbuild.build({
   entryPoints: [
     join(__dirname, `../src/client/page.tsx`),
     join(__dirname, `../src/client/splash.css`),

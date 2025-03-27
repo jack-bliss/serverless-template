@@ -1,7 +1,6 @@
 import { program } from 'commander';
 import * as esbuild from 'esbuild';
 import { join } from 'path';
-import { readFile } from 'fs/promises';
 
 const validEntries = ['server', 'lambda'] as const;
 type ValidEntry = (typeof validEntries)[number];
@@ -15,15 +14,13 @@ program.requiredOption(
 
 program.parse();
 
-const { target } = program.opts() as {
-  target: string;
-};
+const { target } = program.opts<{ target: string }>();
 
 if (!isValidEntry(target)) {
   throw new Error(`Target must be one of ${validEntries.join(', ')}`);
 }
 
-esbuild.build({
+void esbuild.build({
   entryPoints: [join(__dirname, `../src/server/${target}.ts`)],
   bundle: true,
   minify: false,

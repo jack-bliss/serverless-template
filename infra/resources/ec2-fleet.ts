@@ -1,12 +1,12 @@
 import {
-  aws_ec2 as ec2,
   aws_autoscaling as autoscaling,
-  aws_iam as iam,
   aws_cloudtrail as cloudtrail,
+  aws_ec2 as ec2,
+  aws_iam as iam,
 } from 'aws-cdk-lib';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { createBucket } from './s3';
-import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 export const createEc2Fleet = ({
   scope,

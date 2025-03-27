@@ -1,10 +1,10 @@
+import { Router } from 'express';
 import { renderTemplate } from '../../services';
 import template from '../template.html';
-import { Router } from 'express';
 
 export const notFound = Router();
 
-notFound.get('*', (req, res) => {
+notFound.get('*', (_req, res) => {
   const page = renderTemplate(template, {
     title: '404',
     body: 'File not found!',

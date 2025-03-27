@@ -1,9 +1,6 @@
-import serverlessExpress from '@vendia/serverless-express';
+import serverlessExpress from '@codegenie/serverless-express';
 import { app } from './router';
 
-export const handler = serverlessExpress({
+export const handler: unknown = serverlessExpress({
   app,
-  binarySettings: {
-    contentTypes: ['audio/*', 'image/*'],
-  },
 });
