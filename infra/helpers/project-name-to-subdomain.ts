@@ -3,5 +3,5 @@ export function projectNameToSubdomain(projectName: string) {
     .toLowerCase()
     .replace(/\s+/g, '-') // replace all strings of whitespace with a single hyphen
     .replace(/[^.-\w]/g, '') // get rid of anything other than ".", "-", and word characters
-    .replace(/\W+/g, '-'); // replace any remaining symbols with a single hypen
+    .replace(/\W+/g, '-'); // replace any remaining symbols with a single hyphen
 }

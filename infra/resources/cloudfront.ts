@@ -12,6 +12,7 @@ export const createDistribution = ({
   certificateArn,
   aliases,
   stackName,
+  defaultRootObject,
 }: {
   scope: Construct;
   id: string;
@@ -19,12 +20,14 @@ export const createDistribution = ({
   aliases: string[];
   origin: cloudfront.IOrigin;
   stackName: string;
+  defaultRootObject?: string;
 }) => {
   const distribution = new cloudfront.Distribution(
     scope,
     `${id}_Cloudfront`,
     {
       comment: `${stackName} ${id} cache behaviour`,
+      defaultRootObject,
       defaultBehavior: {
         origin,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
